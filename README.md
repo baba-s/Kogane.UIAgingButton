@@ -5,8 +5,8 @@
 ![2020-07-07_221512](https://user-images.githubusercontent.com/6134875/86786922-84e2a380-c09f-11ea-8187-a0f64fa3b28d.png)
 
 エージングテストで自動でクリックしてほしいゲームオブジェクトに「UIAgingButton」をアタッチします  
-そして、スクリプトから `Kogane.UIAgingButton.IsEnable = true;` することで  
-エージングテストを開始し、UIAgingButton がアタッチされたゲームオブジェクトが自動でクリックされるようになります  
+そして、スクリプトから `Kogane.UIAgingButton.IsEnable = true;` することでエージングテストを開始し、  
+UIAgingButton がアタッチされたゲームオブジェクトが自動でクリックされるようになります  
 
 ```cs
 using Kogane;
