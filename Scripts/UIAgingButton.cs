@@ -39,7 +39,7 @@ namespace Kogane
 		/// <summary>
 		/// クリックされる時に呼び出されるデリゲートを設定します
 		/// </summary>
-		public static Action<IEventSystemHandler, PointerEventData> OnClick { private get; set; } = ( handler, eventData ) => ( ( IPointerClickHandler ) handler ).OnPointerClick( eventData );
+		public static Action<IEventSystemHandler, PointerEventData> OnClick { private get; set; } = ( handler, eventData ) => ( handler as IPointerClickHandler )?.OnPointerClick( eventData );
 
 		/// <summary>
 		/// クリックする時に対象のゲームオブジェクトを無視するかどうかを確認する時に呼び出されるデリゲートを設定します
@@ -108,7 +108,7 @@ namespace Kogane
 			// 変数(static)
 			//================================================================================
 			private static List<RaycastResult> m_raycastResults;
-			
+
 			//================================================================================
 			// 関数(static)
 			//================================================================================
@@ -171,7 +171,7 @@ namespace Kogane
 			// 変数(static)
 			//================================================================================
 			private static Vector3[] m_fourCornersArray;
-			
+
 			//================================================================================
 			// 関数(static)
 			//================================================================================
