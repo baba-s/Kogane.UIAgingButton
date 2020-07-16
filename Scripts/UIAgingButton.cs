@@ -16,12 +16,26 @@ namespace Kogane
 	public sealed class UIAgingButton : MonoBehaviour
 	{
 		//================================================================================
+		// 定数
+		//================================================================================
+		/// <summary>
+		/// 無効なタグの名前
+		/// </summary>
+		public const string UNTAGGED = "Untagged";
+
+		//================================================================================
 		// 変数(SerializeField)
 		//================================================================================
+		[SerializeField]                  private string  m_tag          = default; // タグ
 		[SerializeField]                  private Graphic m_graphic      = default; // ゲームオブジェクトにアタッチされている Graphic
 		[SerializeField]                  private bool    m_isOnce       = default; // 1度だけクリックする場合 true
 		[SerializeField][Range( 0, 100 )] private float   m_randomWeight = default; // クリックするかどうかの乱数の重み（ 0 から 100、0 か 100 の場合は必ずクリック ）
 		[SerializeField]                  private int     m_delayFrame   = default; // ゲームオブジェクトがアクティブになってからボタンを押すまでの遅延フレーム数
+
+		//================================================================================
+		// 変数(static)
+		//================================================================================
+		private static Dictionary<string, bool> m_isEnableTableCache;
 
 		//================================================================================
 		// プロパティ(static)
@@ -29,22 +43,27 @@ namespace Kogane
 		/// <summary>
 		/// エージングテストが有効かどうかを取得または設定します
 		/// </summary>
-		public static bool IsEnable { get; set; }
+		private static Dictionary<string, bool> IsEnableTable => m_isEnableTableCache ?? ( m_isEnableTableCache = new Dictionary<string, bool>() );
+		
+		/// <summary>
+		/// エージングテストで使用できるタグを取得または設定します
+		/// </summary>
+		public static string[] Tags { get; set; }
 
 		/// <summary>
 		/// クリックできるかどうか確認する時に呼び出されるデリゲートを設定します
 		/// </summary>
-		public static Func<bool> CanClick { private get; set; } = () => true;
+		public static Func<bool> CanClick { private get; set; }
 
 		/// <summary>
 		/// クリックされる時に呼び出されるデリゲートを設定します
 		/// </summary>
-		public static Action<IEventSystemHandler, PointerEventData> OnClick { private get; set; } = ( handler, eventData ) => ( handler as IPointerClickHandler )?.OnPointerClick( eventData );
+		public static Action<IEventSystemHandler, PointerEventData> OnClick { private get; set; }
 
 		/// <summary>
 		/// クリックする時に対象のゲームオブジェクトを無視するかどうかを確認する時に呼び出されるデリゲートを設定します
 		/// </summary>
-		public static Func<GameObject, bool> IsClick { private get; set; } = _ => true;
+		public static Func<GameObject, bool> IsClick { private get; set; }
 
 #if !DISABLE_UNI_AGING_BUTTON
 
@@ -70,7 +89,7 @@ namespace Kogane
 		/// </summary>
 		private void Update()
 		{
-			if ( !IsEnable ) return;
+			if ( !GetEnable( m_tag ) ) return;
 
 			m_frameCount++;
 
@@ -90,10 +109,61 @@ namespace Kogane
 				eventData: eventData,
 				functor: ( eventSystemHandler, data ) =>
 				{
-					OnClick?.Invoke( eventSystemHandler, eventData );
+					if ( OnClick != null )
+					{
+						OnClick.Invoke( eventSystemHandler, eventData );
+					}
+					else
+					{
+						( eventSystemHandler as IPointerClickHandler )?.OnPointerClick( eventData );
+					}
+
 					m_isClicked = true;
 				}
 			);
+		}
+
+		//================================================================================
+		// 関数(static)
+		//================================================================================
+		/// <summary>
+		/// 指定されたタグに紐づくエージングテストが有効かどうかを返します
+		/// </summary>
+		public static bool GetEnable( string tag )
+		{
+			if ( tag == UNTAGGED )
+			{
+				tag = string.Empty;
+			}
+
+			return IsEnableTable.ContainsKey( tag ) && IsEnableTable[ tag ];
+		}
+
+		/// <summary>
+		/// 指定されたタグに紐づくエージングテストが有効かどうかを設定します
+		/// </summary>
+		public static void SetEnable( string tag, bool isEnable )
+		{
+			if ( tag == UNTAGGED )
+			{
+				tag = string.Empty;
+			}
+
+			IsEnableTable[ tag ] = isEnable;
+		}
+
+		/// <summary>
+		/// ゲーム実行時に呼び出されます
+		/// </summary>
+		[RuntimeInitializeOnLoadMethod( RuntimeInitializeLoadType.BeforeSceneLoad )]
+		private static void RuntimeInitializeOnLoadMethod()
+		{
+			m_isEnableTableCache?.Clear();
+			m_isEnableTableCache = null;
+
+			CanClick = null;
+			OnClick  = null;
+			IsClick  = null;
 		}
 
 		//================================================================================
