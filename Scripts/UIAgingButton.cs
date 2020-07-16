@@ -27,11 +27,11 @@ namespace Kogane
 		//================================================================================
 		// 変数(SerializeField)
 		//================================================================================
-		[SerializeField][Popup]           private string  m_tag          = default; // タグ
-		[SerializeField]                  private Graphic m_graphic      = default; // ゲームオブジェクトにアタッチされている Graphic
-		[SerializeField]                  private bool    m_isOnce       = default; // 1度だけクリックする場合 true
-		[SerializeField][Range( 0, 100 )] private float   m_randomWeight = default; // クリックするかどうかの乱数の重み（ 0 から 100、0 か 100 の場合は必ずクリック ）
-		[SerializeField]                  private int     m_delayFrame   = default; // ゲームオブジェクトがアクティブになってからボタンを押すまでの遅延フレーム数
+		[SerializeField][Popup]           private string  m_tag          = string.Empty; // タグ
+		[SerializeField]                  private Graphic m_graphic      = default;      // ゲームオブジェクトにアタッチされている Graphic
+		[SerializeField]                  private bool    m_isOnce       = default;      // 1度だけクリックする場合 true
+		[SerializeField][Range( 0, 100 )] private float   m_randomWeight = default;      // クリックするかどうかの乱数の重み（ 0 から 100、0 か 100 の場合は必ずクリック ）
+		[SerializeField]                  private int     m_delayFrame   = default;      // ゲームオブジェクトがアクティブになってからボタンを押すまでの遅延フレーム数
 
 		//================================================================================
 		// 変数(static)
@@ -132,7 +132,7 @@ namespace Kogane
 		/// </summary>
 		public static bool GetEnable( string tag )
 		{
-			if ( tag == UNTAGGED )
+			if ( tag == null || tag == UNTAGGED )
 			{
 				tag = string.Empty;
 			}
@@ -145,7 +145,7 @@ namespace Kogane
 		/// </summary>
 		public static void SetEnable( string tag, bool isEnable )
 		{
-			if ( tag == UNTAGGED )
+			if ( tag == null || tag == UNTAGGED )
 			{
 				tag = string.Empty;
 			}
