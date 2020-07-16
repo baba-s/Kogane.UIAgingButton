@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kogane.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace Kogane
 		//================================================================================
 		// 変数(SerializeField)
 		//================================================================================
-		[SerializeField]                  private string  m_tag          = default; // タグ
+		[SerializeField][Popup]           private string  m_tag          = default; // タグ
 		[SerializeField]                  private Graphic m_graphic      = default; // ゲームオブジェクトにアタッチされている Graphic
 		[SerializeField]                  private bool    m_isOnce       = default; // 1度だけクリックする場合 true
 		[SerializeField][Range( 0, 100 )] private float   m_randomWeight = default; // クリックするかどうかの乱数の重み（ 0 から 100、0 か 100 の場合は必ずクリック ）
@@ -44,7 +45,7 @@ namespace Kogane
 		/// エージングテストが有効かどうかを取得または設定します
 		/// </summary>
 		private static Dictionary<string, bool> IsEnableTable => m_isEnableTableCache ?? ( m_isEnableTableCache = new Dictionary<string, bool>() );
-		
+
 		/// <summary>
 		/// エージングテストで使用できるタグを取得または設定します
 		/// </summary>
