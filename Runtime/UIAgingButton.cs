@@ -103,27 +103,33 @@ namespace Kogane
             if ( CanClick != null && !CanClick() ) return;
             if ( !EventSystemUtils.CanClick( m_graphic, IsClick ) && !EventSystemUtils.CanClick( m_collider2D, IsClick ) ) return;
 
-            // クリックできる場合はクリックします
-            var eventData = new PointerEventData( EventSystem.current );
+            // GC Alloc 対策のため処理をローカル関数に格納しています
+            void Impl()
+            {
+                // クリックできる場合はクリックします
+                var eventData = new PointerEventData( EventSystem.current );
 
-            ExecuteEvents.Execute<IEventSystemHandler>
-            (
-                target: gameObject,
-                eventData: eventData,
-                functor: ( eventSystemHandler, data ) =>
-                {
-                    if ( OnClick != null )
+                ExecuteEvents.Execute<IEventSystemHandler>
+                (
+                    target: gameObject,
+                    eventData: eventData,
+                    functor: ( eventSystemHandler, data ) =>
                     {
-                        OnClick.Invoke( eventSystemHandler, eventData );
-                    }
-                    else
-                    {
-                        ( eventSystemHandler as IPointerClickHandler )?.OnPointerClick( eventData );
-                    }
+                        if ( OnClick != null )
+                        {
+                            OnClick.Invoke( eventSystemHandler, eventData );
+                        }
+                        else
+                        {
+                            ( eventSystemHandler as IPointerClickHandler )?.OnPointerClick( eventData );
+                        }
 
-                    m_isClicked = true;
-                }
-            );
+                        m_isClicked = true;
+                    }
+                );
+            }
+
+            Impl();
         }
 
         //================================================================================
