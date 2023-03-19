@@ -232,8 +232,8 @@ namespace Kogane
                 return
                     go == gameObject ||
                     go.GetComponent<Graphic>() &&
-                    go.transform.IsChildOf( gameObject.transform ) &&
-                    go.GetComponentInParent<Selectable>().gameObject == gameObject
+                    go.transform.IsChildOf( gameObject.transform )
+                    // go.GetComponentInParent<Selectable>().gameObject == gameObject
                     ;
             }
 
