@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kogane.Internal;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -24,6 +25,11 @@ namespace Kogane
         /// </summary>
         public const string UNTAGGED = "Untagged";
 
+        /// <summary>
+        /// いずれかのタグの名前
+        /// </summary>
+        public const string ANY = "Any";
+
         //================================================================================
         // 変数(SerializeField)
         //================================================================================
@@ -38,6 +44,18 @@ namespace Kogane
         // 変数(static)
         //================================================================================
         private static Dictionary<string, bool> m_isEnableTableCache;
+
+        //================================================================================
+        // プロパティ
+        //================================================================================
+        /// <summary>
+        /// タグを取得または設定します
+        /// </summary>
+        public string Tag
+        {
+            get => m_tag;
+            set => m_tag = value;
+        }
 
         //================================================================================
         // プロパティ(static)
@@ -140,6 +158,16 @@ namespace Kogane
         /// </summary>
         public static bool GetEnable( string tag )
         {
+            if ( tag == ANY )
+            {
+                foreach ( var x in IsEnableTable.Values )
+                {
+                    if ( x ) return true;
+                }
+
+                return false;
+            }
+
             if ( tag is null or UNTAGGED )
             {
                 tag = string.Empty;
@@ -206,7 +234,10 @@ namespace Kogane
 
                 var canvas        = graphic.canvas;
                 var rectTransform = graphic.rectTransform;
-                var position      = RectTransformUtils.RectTransformToScreenPoint( canvas, rectTransform );
+
+                Assert.IsTrue( rectTransform != null, $"`{GetHierarchyPath( graphic )}` の RectTransform が null です" );
+
+                var position = RectTransformUtils.RectTransformToScreenPoint( canvas, rectTransform );
 
                 var pointerEventData = new PointerEventData( EventSystem.current )
                 {
@@ -235,6 +266,20 @@ namespace Kogane
                     go.transform.IsChildOf( gameObject.transform )
                     // go.GetComponentInParent<Selectable>().gameObject == gameObject
                     ;
+
+                static string GetHierarchyPath( Component self )
+                {
+                    var path   = self.name;
+                    var parent = self.transform.parent;
+
+                    while ( parent != null )
+                    {
+                        path   = parent.name + "/" + path;
+                        parent = parent.parent;
+                    }
+
+                    return path;
+                }
             }
 
             /// <summary>

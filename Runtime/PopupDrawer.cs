@@ -31,12 +31,9 @@ namespace Kogane.Internal
             GUIContent         label
         )
         {
-            if ( m_emptyTags == null )
-            {
-                m_emptyTags = new string[ 0 ];
-            }
+            m_emptyTags ??= Array.Empty<string>();
 
-            var tags          = UIAgingButton.Tags ?? m_emptyTags;
+            var tags          = ( UIAgingButton.Tags ?? m_emptyTags ).Prepend( UIAgingButton.ANY ).ToArray();
             var selectedIndex = Array.IndexOf( tags, property.stringValue ) + 1;
             var tagsWithNone  = tags.Prepend( UIAgingButton.UNTAGGED ).ToArray();
             var index         = EditorGUI.Popup( position, property.displayName, selectedIndex, tagsWithNone ) - 1;
